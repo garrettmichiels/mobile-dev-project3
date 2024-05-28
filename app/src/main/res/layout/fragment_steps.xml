@@ -11,21 +11,21 @@
         android:id="@+id/stepsCountText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="224dp"
-        android:text="Steps"
+        android:layout_marginEnd="41dp"
+        android:layout_marginBottom="15dp"
+        android:text="0"
         android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/stepsText"
+        app:layout_constraintEnd_toEndOf="@+id/stepsText" />
 
     <TextView
         android:id="@+id/stepsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="303dp"
         android:text="Steps Taken"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/stepsCountText"
-        app:layout_constraintTop_toBottomOf="@+id/stepsCountText" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

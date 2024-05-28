@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putStringSet("gm-meals", new HashSet<>(Arrays.asList("Meal1", "Meal2", "Meal3")));
         editor.putStringSet("gm-calories", new HashSet<>(Arrays.asList("120", "250", "25")));
         editor.putStringSet("gm-hydration", new HashSet<>(Arrays.asList("12:15AM", "12:30PM")));
-        editor.putStringSet("gm-ml", new HashSet<>(Arrays.asList("120ml", "250ml")));
+        editor.putStringSet("gm-ml", new HashSet<>(Arrays.asList("120", "250")));
         editor.commit();
 
         usernameET = findViewById(R.id.usernameInput);

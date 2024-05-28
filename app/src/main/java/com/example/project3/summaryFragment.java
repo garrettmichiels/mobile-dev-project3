@@ -4,9 +4,11 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +16,10 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class summaryFragment extends Fragment {
+    View view;
+    String username;
+    int height;
+    int weight;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +65,27 @@ public class summaryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_summary, container, false);
+        view = inflater.inflate(R.layout.fragment_summary, container, false);
+
+        if (getArguments() != null) {
+            Bundle bundle = getArguments();
+            username = bundle.getString("USERNAME");
+            height = bundle.getInt("height");
+            weight = bundle.getInt("weight");
+            TextView name = view.findViewById(R.id.usernameText);
+            name.setText(username);
+            TextView heightTV = view.findViewById(R.id.userHeightText);
+            heightTV.setText("Height: " + height);
+            TextView weightTV = view.findViewById(R.id.userWeightText);
+            weightTV.setText("Weight: " + weight);
+            TextView BMI_TV = view.findViewById(R.id.userBMIText);
+            BMI_TV.setText("BMI: " + calculateBMI(height, weight));
+        }
+
+        return view;
+    }
+
+    public float calculateBMI(int height, int weight){
+        return (float) (weight * 703) / (height * height);
     }
 }

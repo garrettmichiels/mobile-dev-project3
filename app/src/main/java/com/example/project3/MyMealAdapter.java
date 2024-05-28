@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+public class MyMealAdapter extends RecyclerView.Adapter<MyMealAdapter.MyViewHolder> {
 
     Context context;
     ArrayList<String> meals;
     ArrayList<String> calories;
 
-    public MyAdapter(Context context, ArrayList<String> meals, ArrayList<String> calories) {
+    public MyMealAdapter(Context context, ArrayList<String> meals, ArrayList<String> calories) {
         this.context = context;
         this.meals = meals;
         this.calories = calories;
@@ -25,16 +25,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @NonNull
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyMealAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.meal_layout, parent, false);
         MyViewHolder myViewHolder = new MyViewHolder(view);
         return myViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyMealAdapter.MyViewHolder holder, int position) {
         holder.meal.setText(meals.get(position));
-        holder.calories.setText(calories.get(position));
+        holder.calories.setText(calories.get(position)+"cals");
     }
 
     @Override

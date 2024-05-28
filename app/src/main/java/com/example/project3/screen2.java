@@ -20,9 +20,6 @@ import java.util.Set;
 
 public class screen2 extends AppCompatActivity {
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,21 +31,26 @@ public class screen2 extends AppCompatActivity {
             return insets;
         });
 
-        MealsFragment mealsFragment = new MealsFragment();
-        hydrationFragment hydrationFragment = new hydrationFragment();
-        summaryFragment summaryFragment = new summaryFragment();
-        stepsFragment stepsFragment = new stepsFragment();
-
         //Get username from intent
         String username = getIntent().getStringExtra("USERNAME");
         Log.i("USERNAME", username);
 
         //Create bundle with username and send to fragments
+        MealsFragment mealsFragment = new MealsFragment();
         Bundle mealBundle = getMealsBundle(username);
         mealsFragment.setArguments(mealBundle);
 
+        hydrationFragment hydrationFragment = new hydrationFragment();
+        Bundle hydrationBundle = getHydrationBundle(username);
+        hydrationFragment.setArguments(hydrationBundle);
+
+        summaryFragment summaryFragment = new summaryFragment();
+        Bundle summaryBundle = getSummaryBundle(username);
+        summaryFragment.setArguments(summaryBundle);
+
+        stepsFragment stepsFragment = new stepsFragment();
+
         FragmentManager fm = getSupportFragmentManager();
-        fm.setFragmentResult("USERNAME", mealBundle);
 
         //Incorporate tabs and fragments
         TabLayout tabs = findViewById(R.id.tabs);
@@ -85,17 +87,14 @@ public class screen2 extends AppCompatActivity {
                             .addToBackStack(null)
                             .commit();
                 }
-
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
     }
@@ -122,9 +121,47 @@ public class screen2 extends AppCompatActivity {
 
         mealBundle.putStringArrayList("meals", mealsArray);
         mealBundle.putStringArrayList("calories", caloriesArray);
-
-
-
         return mealBundle;
+    }
+
+    public Bundle getHydrationBundle(String username) {
+        SharedPreferences sharedPreferences = getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
+        Bundle hydrationBundle = new Bundle();
+        hydrationBundle.putString("USERNAME", username);
+        Set<String> hydration = sharedPreferences.getStringSet(username+"-hydration", null);
+        Set<String> ml = sharedPreferences.getStringSet(username+"-ml", null);
+
+        Log.i("HYDRATION", hydration.toString());
+        Log.i("ML", ml.toString());
+
+        ArrayList<String> hydrationArray = new ArrayList<>();
+        ArrayList<String> mlArray = new ArrayList<>();
+        for (String h : hydration) {
+            hydrationArray.add(h);
+        }
+        for (String m : ml) {
+            mlArray.add(m);
+        }
+
+        hydrationBundle.putStringArrayList("hydration", hydrationArray);
+        hydrationBundle.putStringArrayList("ml", mlArray);
+        return hydrationBundle;
+    }
+
+    public Bundle getSummaryBundle(String username) {
+        SharedPreferences sharedPreferences = getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
+        Bundle summaryBundle = new Bundle();
+        summaryBundle.putString("USERNAME", username);
+        int weight = sharedPreferences.getInt(username+"-weight", 0);
+        int height = sharedPreferences.getInt(username+"-height", 0);
+        int age = sharedPreferences.getInt(username+"-age", 0);
+        Log.i("WEIGHT", String.valueOf(weight));
+        Log.i("HEIGHT", String.valueOf(height));
+        Log.i("AGE", String.valueOf(age));
+
+        summaryBundle.putInt("weight", weight);
+        summaryBundle.putInt("height", height);
+        summaryBundle.putInt("age", age);
+        return summaryBundle;
     }
 }
