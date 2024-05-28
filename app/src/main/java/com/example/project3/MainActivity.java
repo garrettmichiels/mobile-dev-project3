@@ -40,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        usernameET = findViewById(R.id.usernameInput);
-        passwordET = findViewById(R.id.passwordInput);
-
         ActivityResultLauncher<Intent> screen2Launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -65,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         editor.putStringSet("gm-ml", new HashSet<>(Arrays.asList("120ml", "250ml")));
         editor.commit();
 
+        usernameET = findViewById(R.id.usernameInput);
+        passwordET = findViewById(R.id.passwordInput);
         // SIGN IN BUTTON
         Log.i("DEBUG", "Create Sign In Button");
         Button signin = findViewById(R.id.signinButton);
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent myIntent = new Intent(MainActivity.this, screen2.class);
                         myIntent.putExtra("USERNAME", username);
                         myIntent.putExtra("PASSWORD", password);
-                        Log.i("DEBUG", "Go to dashboard");
+                        Log.i("DEBUG", "Go to SCREEN2");
                         screen2Launcher.launch(myIntent);
                     }
                     else {

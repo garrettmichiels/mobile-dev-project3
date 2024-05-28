@@ -20,10 +20,4 @@
         android:src="@drawable/plus"
         android:layout_margin="16dp" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="178dp"
-        android:layout_height="161dp"
-        android:text="Button" />
-
 </FrameLayout>

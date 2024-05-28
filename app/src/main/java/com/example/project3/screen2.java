@@ -15,7 +15,12 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 public class screen2 extends AppCompatActivity {
+
+
 
 
     @Override
@@ -31,23 +36,19 @@ public class screen2 extends AppCompatActivity {
 
         MealsFragment mealsFragment = new MealsFragment();
         hydrationFragment hydrationFragment = new hydrationFragment();
-//        summaryFragment summaryFragment = new summaryFragment();
-//        stepsFragment stepsFragment = new stepsFragment();
+        summaryFragment summaryFragment = new summaryFragment();
+        stepsFragment stepsFragment = new stepsFragment();
 
-        //Get username from sharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
-        String username = sharedPreferences.getString("USERNAME", "");
-        Log.d("USERNAME", username);
+        //Get username from intent
+        String username = getIntent().getStringExtra("USERNAME");
+        Log.i("USERNAME", username);
 
         //Create bundle with username and send to fragments
-        Bundle bundle = new Bundle();
-        bundle.putString("USERNAME", username);
-//        String[] meals = (String[]) sharedPreferences.getStringSet(username+"-meals", null).toArray();
-//        String[] calories = (String[]) sharedPreferences.getStringSet(username+"-calories", null).toArray();
-//        bundle.putStringArray();
+        Bundle mealBundle = getMealsBundle(username);
+        mealsFragment.setArguments(mealBundle);
 
         FragmentManager fm = getSupportFragmentManager();
-        fm.setFragmentResult("USERNAME", bundle);
+        fm.setFragmentResult("USERNAME", mealBundle);
 
         //Incorporate tabs and fragments
         TabLayout tabs = findViewById(R.id.tabs);
@@ -55,6 +56,8 @@ public class screen2 extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
+                    Bundle mealBundle = getMealsBundle(username);
+                    mealsFragment.setArguments(mealBundle);
                     fm.beginTransaction()
                             .replace(R.id.fragmentContainerView, mealsFragment, null)
                             .setReorderingAllowed(true)
@@ -69,18 +72,18 @@ public class screen2 extends AppCompatActivity {
                             .commit();
                 }
                 else if (tab.getPosition() == 2) {
-//                    fm.beginTransaction()
-//                            .replace(R.id.fragmentContainerView, summaryFragment, null)
-//                            .setReorderingAllowed(true)
-//                            .addToBackStack(null)
-//                            .commit();
+                    fm.beginTransaction()
+                            .replace(R.id.fragmentContainerView, summaryFragment, null)
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
+                            .commit();
                 }
                 else if (tab.getPosition() == 3) {
-//                    fm.beginTransaction()
-//                            .replace(R.id.fragmentContainerView, stepsFragment, null)
-//                            .setReorderingAllowed(true)
-//                            .addToBackStack(null)
-//                            .commit();
+                    fm.beginTransaction()
+                            .replace(R.id.fragmentContainerView, stepsFragment, null)
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
+                            .commit();
                 }
 
             }
@@ -95,5 +98,33 @@ public class screen2 extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    public Bundle getMealsBundle(String username) {
+        SharedPreferences sharedPreferences = getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
+        Bundle mealBundle = new Bundle();
+        mealBundle.putString("USERNAME", username);
+        Set<String> meals = sharedPreferences.getStringSet(username+"-meals", null);
+        Set<String> calories = sharedPreferences.getStringSet(username+"-calories", null);
+
+        Log.i("MEALS", meals.toString());
+        Log.i("CALORIES", calories.toString());
+
+        ArrayList<String> mealsArray = new ArrayList<>();
+        ArrayList<String> caloriesArray = new ArrayList<>();
+        for (String meal : meals) {
+            mealsArray.add(meal);
+        }
+        for (String calorie : calories) {
+            caloriesArray.add(calorie);
+        }
+
+        mealBundle.putStringArrayList("meals", mealsArray);
+        mealBundle.putStringArrayList("calories", caloriesArray);
+
+
+
+        return mealBundle;
     }
 }
