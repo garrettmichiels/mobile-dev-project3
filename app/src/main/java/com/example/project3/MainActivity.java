@@ -20,11 +20,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 public class MainActivity extends AppCompatActivity {
     EditText usernameET;
     EditText passwordET;
-    SharedPreferences preferences = getSharedPreferences("USER_INFO", MODE_PRIVATE);
-    SharedPreferences.Editor editor = preferences.edit();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
         usernameET = findViewById(R.id.usernameInput);
         passwordET = findViewById(R.id.passwordInput);
 
@@ -55,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         editor.putInt("gm-weight", 77);
         editor.putInt("gm-height", 177);
         editor.putInt("gm-age", 22);
+        editor.putStringSet("gm-meals", new HashSet<>(Arrays.asList("Meal1", "Meal2", "Meal3")));
+        editor.putStringSet("gm-calories", new HashSet<>(Arrays.asList("120", "250", "25")));
+        editor.putStringSet("gm-hydration", new HashSet<>(Arrays.asList("12:15AM", "12:30PM")));
+        editor.putStringSet("gm-ml", new HashSet<>(Arrays.asList("120ml", "250ml")));
         editor.commit();
 
         // SIGN IN BUTTON
@@ -70,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please enter a Username and Password", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    SharedPreferences sharedPreferences = getSharedPreferences("EXPENSE_APP", MODE_PRIVATE);
-                    String result = sharedPreferences.getString(username, "Invalid Username or Password");
+                    String result = prefs.getString(username, "Invalid Username or Password");
                     if (result.equals(password)) {
                         Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 

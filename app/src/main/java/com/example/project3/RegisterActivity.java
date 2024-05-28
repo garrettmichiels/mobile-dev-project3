@@ -21,8 +21,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class RegisterActivity extends AppCompatActivity {
-    SharedPreferences preferences = getSharedPreferences("USER_INFO", MODE_PRIVATE);
-    SharedPreferences.Editor editor = preferences.edit();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +32,9 @@ public class RegisterActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        SharedPreferences preferences = getSharedPreferences("USER_INFO", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
 
         ActivityResultLauncher<Intent> screen2Launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
