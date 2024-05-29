@@ -58,8 +58,6 @@ public class screen2 extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
-                    Bundle mealBundle = getMealsBundle(username);
-                    mealsFragment.setArguments(mealBundle);
                     fm.beginTransaction()
                             .replace(R.id.fragmentContainerView, mealsFragment, null)
                             .setReorderingAllowed(true)

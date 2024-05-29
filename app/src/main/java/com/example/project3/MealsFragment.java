@@ -2,10 +2,14 @@ package com.example.project3;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,10 +17,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
@@ -39,6 +46,7 @@ public class MealsFragment extends Fragment {
     private String username;
     private ArrayList<String> meals;
     private ArrayList<String> calories;
+    private MyMealAdapter adapter;
 
     public MealsFragment() {
         // Required empty public constructor
@@ -75,6 +83,8 @@ public class MealsFragment extends Fragment {
             Log.d("MEALS SIZE", meals.size() + "");
             calories = bundle.getStringArrayList("calories");
             Log.d("CALORIES SIZE", calories.size() + "");
+            adapter = new MyMealAdapter(getActivity(), meals, calories);
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -93,8 +103,6 @@ public class MealsFragment extends Fragment {
             Log.d("CALORIES SIZE", calories.size() + "");
         }
 
-        MyMealAdapter adapter = new MyMealAdapter(getActivity(), meals, calories);
-        adapter.notifyDataSetChanged();
 
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_meals, container, false);
@@ -108,16 +116,92 @@ public class MealsFragment extends Fragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //add blank meal with 0 cals to meal
-                meals.add("New Meal");
-                calories.add("0");
-                adapter.notifyDataSetChanged();
-                //Toast that they should edit the meal to add cals and change name
-                Toast.makeText(getContext(), "New Meal Added, swipe to edit it", Toast.LENGTH_LONG).show();
+                openDialogForAdd(adapter);
+
             }
         });
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        if (direction == ItemTouchHelper.LEFT) {
+                            int position = viewHolder.getAdapterPosition();
+                            meals.remove(position);
+                            calories.remove(position);
+                            adapter.notifyDataSetChanged();
+                        }
+                        else if (direction == ItemTouchHelper.RIGHT) {
+                            int position = viewHolder.getAdapterPosition();
+                            //Start dialog
+                            openDialog(position, adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+        itemTouchHelper.attachToRecyclerView(mealsRV);
         return view;
+    }
+    public void openDialog(int position, MyMealAdapter adapter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog dialog = builder.create();
+        View view = getLayoutInflater().inflate(R.layout.edit_meal_layout, null);
+
+        EditText mealName = view.findViewById(R.id.mealNameText);
+        mealName.setText(meals.get(position));
+        EditText mealCals = view.findViewById(R.id.mealCaloriesText);
+        mealCals.setText(calories.get(position));
+
+        builder.setView(view);
+        builder.setMessage("Edit how much you ate in calories").setTitle("Edit a meal");
+
+        builder.setPositiveButton("EDIT", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                meals.set(position, mealName.getText().toString());
+                calories.set(position, mealCals.getText().toString());
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Meal edited", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        });
+        builder.show();
+    }
+
+    public void openDialogForAdd(MyMealAdapter adapter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog dialog = builder.create();
+        View view = getLayoutInflater().inflate(R.layout.edit_meal_layout, null);
+
+        EditText mealName = view.findViewById(R.id.mealNameText);
+        EditText mealCals = view.findViewById(R.id.mealCaloriesText);
+
+        builder.setView(view);
+        builder.setMessage("Add how much you ate in calories").setTitle("Add a meal");
+
+        builder.setPositiveButton("EDIT", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                meals.add(mealName.getText().toString());
+                calories.add(mealCals.getText().toString());
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Meal Added", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        });
+        builder.show();
     }
 }

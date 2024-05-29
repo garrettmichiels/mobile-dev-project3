@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,11 +14,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.DateFormat;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
@@ -28,6 +34,7 @@ public class hydrationFragment extends Fragment {
     View view;
     private String username;
     private ArrayList<String> hydration, ml;
+    private MyHydrationAdapter adapter;
 
 
     public hydrationFragment() {
@@ -63,6 +70,8 @@ public class hydrationFragment extends Fragment {
             Log.d("MEALS SIZE", hydration.size() + "");
             ml = bundle.getStringArrayList("ml");
             Log.d("CALORIES SIZE", ml.size() + "");
+            adapter = new MyHydrationAdapter(getActivity(), hydration, ml);
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -83,10 +92,6 @@ public class hydrationFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_hydration, container, false);
 
-
-        MyHydrationAdapter adapter = new MyHydrationAdapter(getActivity(), hydration, ml);
-        adapter.notifyDataSetChanged();
-
         RecyclerView hydrationRV = view.findViewById(R.id.hydrationRecyclerView);
         hydrationRV.setLayoutManager(new LinearLayoutManager(getContext()));
         hydrationRV.setAdapter(adapter);
@@ -95,30 +100,89 @@ public class hydrationFragment extends Fragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Add how much you drank in ml").setTitle("Add a hydration event");
-
-                builder.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                });
-                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                });
-
-
-                AlertDialog dialog = builder.create();
-
-//                FrameLayout fl = findViewById(android.R.id.custom);
-//                fl.addView(myView, new LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-                hydration.add(LocalTime.now().toString());
-                ml.add("0");
+                openDialogForAdd(adapter);
                 adapter.notifyDataSetChanged();
             }
         });
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        if (direction == ItemTouchHelper.LEFT) {
+                            int position = viewHolder.getAdapterPosition();
+                            hydration.remove(position);
+                            ml.remove(position);
+                            adapter.notifyDataSetChanged();
+                        }
+                        else if (direction == ItemTouchHelper.RIGHT) {
+                            int position = viewHolder.getAdapterPosition();
+                            //Start dialog
+                            openDialogForEdit(position, adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+        itemTouchHelper.attachToRecyclerView(hydrationRV);
         return view;
+    }
+
+    public void openDialogForEdit(int position, MyHydrationAdapter adapter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog dialog = builder.create();
+        View view = getLayoutInflater().inflate(R.layout.edit_hydration_layout, null);
+
+        EditText hydrationAmount = view.findViewById(R.id.hydrationAmountText);
+        hydrationAmount.setText(ml.get(position));
+
+        builder.setView(view);
+        builder.setMessage("Change how much you drank in ml").setTitle("Edit a hydration event");
+
+        builder.setPositiveButton("EDIT", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                hydration.set(position, LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+                ml.set(position, hydrationAmount.getText().toString());
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Hydration edited", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builder.show();
+    }
+
+    public void openDialogForAdd(MyHydrationAdapter adapter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog dialog = builder.create();
+        View view = getLayoutInflater().inflate(R.layout.edit_hydration_layout, null);
+
+        EditText hydrationAmount = view.findViewById(R.id.hydrationAmountText);
+
+        builder.setView(view);
+        builder.setMessage("Add how much you drank in ml").setTitle("Add a hydration event");
+
+        builder.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                hydration.add(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+                ml.add(hydrationAmount.getText().toString());
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Hydration edited", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builder.show();
     }
 }
