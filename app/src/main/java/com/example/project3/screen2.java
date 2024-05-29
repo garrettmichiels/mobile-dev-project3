@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 public class screen2 extends AppCompatActivity {
@@ -102,8 +103,8 @@ public class screen2 extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
         Bundle mealBundle = new Bundle();
         mealBundle.putString("USERNAME", username);
-        Set<String> meals = sharedPreferences.getStringSet(username+"-meals", null);
-        Set<String> calories = sharedPreferences.getStringSet(username+"-calories", null);
+        Set<String> meals = sharedPreferences.getStringSet(username+"-meals", new HashSet<>());
+        Set<String> calories = sharedPreferences.getStringSet(username+"-calories", new HashSet<>());
 
         Log.i("MEALS", meals.toString());
         Log.i("CALORIES", calories.toString());
@@ -126,8 +127,8 @@ public class screen2 extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("APP_PREFERENCES", MODE_PRIVATE);
         Bundle hydrationBundle = new Bundle();
         hydrationBundle.putString("USERNAME", username);
-        Set<String> hydration = sharedPreferences.getStringSet(username+"-hydration", null);
-        Set<String> ml = sharedPreferences.getStringSet(username+"-ml", null);
+        Set<String> hydration = sharedPreferences.getStringSet(username+"-hydration", new HashSet<>());
+        Set<String> ml = sharedPreferences.getStringSet(username+"-ml", new HashSet<>());
 
         Log.i("HYDRATION", hydration.toString());
         Log.i("ML", ml.toString());
